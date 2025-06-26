@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>豆瓣电影爬虫</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+            color: #333;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 10px;
+        }
+        .search-form {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        button {
+            background: #667eea;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: #5a6fd8;
+        }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .result {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        .movie-info {
+            display: flex;
+            gap: 20px;
+        }
+        .movie-poster {
+            flex-shrink: 0;
+        }
+        .movie-poster img {
+            max-width: 150px;
+            border-radius: 5px;
+        }
+        .movie-details h3 {
+            margin-top: 0;
+            color: #667eea;
+        }
+        .movie-meta {
+            color: #666;
+            margin: 10px 0;
+        }
+        .error {
+            background: #fee;
+            color: #c33;
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 4px solid #c33;
+        }
+        .loading {
+            text-align: center;
+            color: #667eea;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            color: #666;
+            border-top: 1px solid #eee;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎬 豆瓣电影爬虫</h1>
+        <p>搜索并获取豆瓣电影详细信息</p>
+        <small>环境: development | 模式: server</small>
+    </div>
+
+    <div class="search-form">
+        <form id="searchForm">
+            <div class="form-group">
+                <label for="movieName">电影名称</label>
+                <input type="text" id="movieName" name="movieName" placeholder="请输入电影名称，如：阳光普照" required>
+            </div>
+            <button type="submit" id="searchBtn">🔍 搜索电影</button>
+        </form>
+    </div>
+
+    <div id="result"></div>
+
+    <div class="footer">
+        <p>Powered by Deno & TypeScript</p>
+    </div>
+
+    <script>
+        const form = document.getElementById('searchForm');
+        const resultDiv = document.getElementById('result');
+        const searchBtn = document.getElementById('searchBtn');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const movieName = document.getElementById('movieName').value.trim();
+            if (!movieName) return;
+
+            searchBtn.disabled = true;
+            searchBtn.textContent = '🔄 搜索中...';
+            
+            resultDiv.innerHTML = '<div class="loading">正在搜索电影信息...</div>';
+
+            try {
+                const response = await fetch('/api/search', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ movieName })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    displayMovie(data.data);
+                } else {
+                    displayError(data.error || '搜索失败');
+                }
+            } catch (error) {
+                displayError('网络请求失败: ' + error.message);
+            } finally {
+                searchBtn.disabled = false;
+                searchBtn.textContent = '🔍 搜索电影';
+            }
+        });
+
+        function displayMovie(movie) {
+            const posterUrl = movie.poster.startsWith('http') 
+                ? `/api/image-proxy?url=${encodeURIComponent(movie.poster)}`
+                : movie.poster;
+
+            resultDiv.innerHTML = `
+                <div class="result">
+                    <div class="movie-info">
+                        <div class="movie-poster">
+                            <img src="${posterUrl}" alt="${movie.title}" onerror="this.style.display='none'">
+                        </div>
+                        <div class="movie-details">
+                            <h3>${movie.title}</h3>
+                            <div class="movie-meta">
+                                <p><strong>年份:</strong> ${movie.year}</p>
+                                <p><strong>评分:</strong> ${movie.rating}</p>
+                                <p><strong>类型:</strong> ${movie.genres.join(', ')}</p>
+                                <p><strong>主演:</strong> ${movie.actors.join(', ')}</p>
+                            </div>
+                            <div class="movie-summary">
+                                <p><strong>简介:</strong></p>
+                                <p>${movie.summary}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function displayError(message) {
+            resultDiv.innerHTML = `
+                <div class="error">
+                    <strong>错误:</strong> ${message}
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>
