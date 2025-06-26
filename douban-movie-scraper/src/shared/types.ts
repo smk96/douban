@@ -22,6 +22,8 @@ export interface MovieInfo {
   poster: string;
   /** 电影简介 */
   summary: string;
+  /** 豆瓣详情页URL */
+  doubanUrl: string;
 }
 
 /**

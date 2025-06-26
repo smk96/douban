@@ -56,7 +56,8 @@ function parseMovieInfo(html: string, url: string): MovieInfo {
       genres: parseGenres(html),
       actors: parseActors(html),
       poster: parsePoster(html),
-      summary: parseSummary(html)
+      summary: parseSummary(html),
+      doubanUrl: url
     };
 
     // 验证必要字段
@@ -307,7 +308,7 @@ export function validateMovieInfo(movieInfo: MovieInfo): boolean {
     return false;
   }
 
-  const requiredFields = ['title', 'year', 'rating', 'genres', 'actors', 'poster', 'summary'];
+  const requiredFields = ['title', 'year', 'rating', 'genres', 'actors', 'poster', 'summary', 'doubanUrl'];
   
   for (const field of requiredFields) {
     if (!(field in movieInfo)) {
@@ -321,7 +322,7 @@ export function validateMovieInfo(movieInfo: MovieInfo): boolean {
   }
 
   // 检查字符串字段
-  const stringFields = ['title', 'year', 'rating', 'poster', 'summary'];
+  const stringFields = ['title', 'year', 'rating', 'poster', 'summary', 'doubanUrl'];
   for (const field of stringFields) {
     if (typeof movieInfo[field as keyof MovieInfo] !== 'string') {
       return false;
@@ -344,6 +345,7 @@ export function cleanMovieInfo(movieInfo: MovieInfo): MovieInfo {
     genres: movieInfo.genres.map(genre => StringUtils.cleanWhitespace(genre)).filter(g => g.length > 0),
     actors: movieInfo.actors.map(actor => StringUtils.cleanWhitespace(actor)).filter(a => a.length > 0),
     poster: movieInfo.poster.trim(),
-    summary: StringUtils.cleanWhitespace(movieInfo.summary)
+    summary: StringUtils.cleanWhitespace(movieInfo.summary),
+    doubanUrl: movieInfo.doubanUrl.trim()
   };
 }

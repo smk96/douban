@@ -434,9 +434,19 @@ export function createDefaultIndexHtml(): string {
         .movie-title {
             font-size: 1.4rem;
             font-weight: 600;
-            color: #333;
             margin-bottom: 12px;
             line-height: 1.3;
+        }
+        
+        .movie-title a {
+            color: #333;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        .movie-title a:hover {
+            color: #667eea;
+            text-decoration: underline;
         }
         
         .movie-meta {
@@ -593,7 +603,9 @@ export function createDefaultIndexHtml(): string {
                             <img src="\${posterUrl}" alt="\${movie.title}" onerror="this.style.display='none'">
                         </div>
                         <div class="movie-details">
-                            <div class="movie-title">\${titleWithYear}</div>
+                            <div class="movie-title">
+                                <a href="\${movie.doubanUrl}" target="_blank" rel="noopener noreferrer">\${titleWithYear}</a>
+                            </div>
                             <div class="movie-meta">
                                 <div class="meta-item">
                                     <span class="meta-label">评分:</span> \${movie.rating}
