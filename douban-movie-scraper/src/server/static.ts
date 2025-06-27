@@ -317,16 +317,33 @@ export function createDefaultIndexHtml(): string {
         }
         
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            background-attachment: fixed;
             min-height: 100vh;
             padding: 20px;
+            position: relative;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 80%, rgba(255,255,255,0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 20%, rgba(255,255,255,0.08) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 1;
         }
         
         .container {
-            max-width: 600px;
+            max-width: 650px;
             margin: 0 auto;
             padding-top: 30px;
+            position: relative;
+            z-index: 2;
         }
         
         .header {
@@ -336,22 +353,30 @@ export function createDefaultIndexHtml(): string {
         
         .header h1 {
             color: white;
-            font-size: 2.5rem;
+            font-size: 2.8rem;
             font-weight: 300;
             margin-bottom: 10px;
+            text-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            letter-spacing: -0.5px;
+            background: linear-gradient(45deg, #fff, #f0f8ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
         
         .search-card {
-            background: white;
-            border-radius: 12px;
-            padding: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15), 0 0 0 1px rgba(255,255,255,0.2);
             margin-bottom: 30px;
+            border: 1px solid rgba(255,255,255,0.3);
         }
         
         .search-form {
             display: flex;
-            gap: 12px;
+            gap: 16px;
             align-items: flex-end;
         }
         
@@ -361,58 +386,92 @@ export function createDefaultIndexHtml(): string {
         
         .form-group label {
             display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-            color: #333;
-            font-size: 14px;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #2d3748;
+            font-size: 15px;
+            letter-spacing: 0.3px;
         }
         
         .form-group input {
             width: 100%;
-            padding: 12px 16px;
-            border: 2px solid #e1e5e9;
-            border-radius: 8px;
+            padding: 14px 18px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
             font-size: 16px;
-            transition: border-color 0.3s ease;
+            transition: all 0.3s ease;
+            background: rgba(255,255,255,0.9);
+            color: #2d3748;
         }
         
         .form-group input:focus {
             outline: none;
             border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            background: white;
+            transform: translateY(-1px);
+        }
+        
+        .form-group input::placeholder {
+            color: #a0aec0;
         }
         
         .search-btn {
-            background: #667eea;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
-            padding: 12px 24px;
-            border-radius: 8px;
+            padding: 14px 28px;
+            border-radius: 12px;
             font-size: 16px;
+            font-weight: 600;
             cursor: pointer;
-            transition: background 0.3s ease;
+            transition: all 0.3s ease;
             white-space: nowrap;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
         }
         
         .search-btn:hover:not(:disabled) {
-            background: #5a6fd8;
+            background: linear-gradient(135deg, #5a6fd8 0%, #6b46c1 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
+        }
+        
+        .search-btn:active {
+            transform: translateY(0);
         }
         
         .search-btn:disabled {
-            background: #ccc;
+            background: linear-gradient(135deg, #cbd5e0 0%, #a0aec0 100%);
             cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
         }
         
         .result-card {
-            background: white;
-            border-radius: 12px;
-            padding: 25px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            margin-top: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 16px;
+            padding: 28px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15), 0 0 0 1px rgba(255,255,255,0.2);
+            margin-top: 24px;
+            border: 1px solid rgba(255,255,255,0.3);
+            animation: slideUp 0.5s ease-out;
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
         
         .movie-info {
             display: flex;
-            gap: 20px;
+            gap: 24px;
         }
         
         .movie-poster {
@@ -420,11 +479,16 @@ export function createDefaultIndexHtml(): string {
         }
         
         .movie-poster img {
-            width: 120px;
-            height: 160px;
+            width: 130px;
+            height: 170px;
             object-fit: cover;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease;
+        }
+        
+        .movie-poster img:hover {
+            transform: scale(1.05);
         }
         
         .movie-details {
@@ -432,72 +496,120 @@ export function createDefaultIndexHtml(): string {
         }
         
         .movie-title {
-            font-size: 1.4rem;
-            font-weight: 600;
-            margin-bottom: 12px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 16px;
             line-height: 1.3;
         }
         
         .movie-title a {
-            color: #333;
+            background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
             text-decoration: none;
-            transition: color 0.3s ease;
+            transition: all 0.3s ease;
+            position: relative;
         }
         
         .movie-title a:hover {
-            color: #667eea;
-            text-decoration: underline;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
         
         .movie-meta {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 8px;
-            margin-bottom: 16px;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
         }
         
         .meta-item {
             font-size: 14px;
-            color: #666;
+            color: #4a5568;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(226, 232, 240, 0.6);
         }
         
         .meta-label {
-            font-weight: 500;
-            color: #333;
+            font-weight: 600;
+            color: #2d3748;
+            margin-right: 8px;
+            display: inline-block;
+            min-width: 50px;
+        }
+        
+        .meta-item:nth-child(1) .meta-label {
+            color: #f56565;
+        }
+        
+        .meta-item:nth-child(2) .meta-label {
+            color: #38b2ac;
+        }
+        
+        .meta-item:nth-child(3) .meta-label {
+            color: #9f7aea;
+        }
+        
+        .meta-item:nth-child(4) .meta-label {
+            color: #ed8936;
         }
         
         .movie-summary {
-            margin-top: 16px;
-            padding-top: 16px;
-            border-top: 1px solid #eee;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px solid rgba(226, 232, 240, 0.6);
         }
         
         .summary-title {
-            font-weight: 500;
-            color: #333;
-            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 12px;
+            font-size: 16px;
         }
         
         .summary-text {
-            color: #666;
-            line-height: 1.6;
+            color: #4a5568;
+            line-height: 1.7;
             font-size: 14px;
         }
         
         .loading {
             text-align: center;
             color: #667eea;
-            padding: 40px;
-            font-size: 16px;
+            padding: 50px;
+            font-size: 18px;
+            font-weight: 500;
+        }
+        
+        .loading::after {
+            content: '';
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #667eea;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s linear infinite;
+            margin-left: 10px;
+        }
+        
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
         }
         
         .error {
-            background: #fee;
-            color: #c33;
-            padding: 16px;
-            border-radius: 8px;
-            border-left: 4px solid #c33;
+            background: linear-gradient(135deg, #fed7d7 0%, #feb2b2 100%);
+            color: #c53030;
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 4px solid #e53e3e;
             font-size: 14px;
+            box-shadow: 0 4px 12px rgba(229, 62, 62, 0.2);
         }
         
         @media (max-width: 768px) {
@@ -506,16 +618,16 @@ export function createDefaultIndexHtml(): string {
             }
             
             .header h1 {
-                font-size: 2rem;
+                font-size: 2.2rem;
             }
             
             .search-card {
-                padding: 20px;
+                padding: 24px;
             }
             
             .search-form {
                 flex-direction: column;
-                gap: 16px;
+                gap: 20px;
             }
             
             .movie-info {
@@ -525,6 +637,10 @@ export function createDefaultIndexHtml(): string {
             
             .movie-poster {
                 align-self: center;
+            }
+            
+            .movie-meta {
+                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -593,8 +709,8 @@ export function createDefaultIndexHtml(): string {
                 ? \`/api/image-proxy?url=\${encodeURIComponent(movie.poster)}\`
                 : movie.poster;
 
-            // 格式化标题，显示中文名和年份在一行
-            const titleWithYear = \`\${movie.title} (\${movie.year})\`;
+            // 格式化标题，添加《》书名号和年份
+            const titleWithYear = \`《\${movie.title}》(\${movie.year})\`;
 
             resultDiv.innerHTML = \`
                 <div class="result-card">
@@ -612,6 +728,9 @@ export function createDefaultIndexHtml(): string {
                                 </div>
                                 <div class="meta-item">
                                     <span class="meta-label">类型:</span> \${movie.genres.join(', ')}
+                                </div>
+                                <div class="meta-item">
+                                    <span class="meta-label">导演:</span> \${movie.directors.join(', ')}
                                 </div>
                                 <div class="meta-item">
                                     <span class="meta-label">主演:</span> \${movie.actors.join(', ')}

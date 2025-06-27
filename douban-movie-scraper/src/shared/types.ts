@@ -16,6 +16,8 @@ export interface MovieInfo {
   rating: string;
   /** 电影类型列表 */
   genres: string[];
+  /** 导演列表 */
+  directors: string[];
   /** 主演列表 */
   actors: string[];
   /** 电影封面图片URL */

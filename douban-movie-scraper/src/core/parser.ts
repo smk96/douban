@@ -54,6 +54,7 @@ function parseMovieInfo(html: string, url: string): MovieInfo {
       year: parseYear(html),
       rating: parseRating(html),
       genres: parseGenres(html),
+      directors: parseDirectors(html),
       actors: parseActors(html),
       poster: parsePoster(html),
       summary: parseSummary(html),
@@ -195,6 +196,39 @@ function parseGenres(html: string): string[] {
 }
 
 /**
+ * 解析导演列表
+ * @param html HTML内容
+ * @returns string[] 导演列表
+ */
+function parseDirectors(html: string): string[] {
+  const directors: string[] = [];
+  
+  // 尝试多种导演提取方式
+  const directorPatterns = [
+    /<a[^>]*rel="v:directedBy"[^>]*>([^<]+)<\/a>/g,
+    /<span[^>]*class="attrs"[^>]*>[\s\S]*?导演[^>]*>[\s\S]*?<a[^>]*>([^<]+)<\/a>/g,
+    /导演[^>]*>[\s\S]*?<a[^>]*>([^<]+)<\/a>/g,
+    /<span[^>]*>导演[^<]*<\/span>[\s\S]*?<a[^>]*>([^<]+)<\/a>/g
+  ];
+
+  for (const pattern of directorPatterns) {
+    let match;
+    while ((match = pattern.exec(html)) !== null) {
+      const director = StringUtils.stripHtml(match[1]).trim();
+      if (director && !directors.includes(director)) {
+        directors.push(director);
+      }
+    }
+    
+    if (directors.length > 0) {
+      break;
+    }
+  }
+
+  return directors.length > 0 ? directors : ['未知导演'];
+}
+
+/**
  * 解析主演列表
  * @param html HTML内容
  * @returns string[] 主演列表
@@ -308,7 +342,7 @@ export function validateMovieInfo(movieInfo: MovieInfo): boolean {
     return false;
   }
 
-  const requiredFields = ['title', 'year', 'rating', 'genres', 'actors', 'poster', 'summary', 'doubanUrl'];
+  const requiredFields = ['title', 'year', 'rating', 'genres', 'directors', 'actors', 'poster', 'summary', 'doubanUrl'];
   
   for (const field of requiredFields) {
     if (!(field in movieInfo)) {
@@ -317,7 +351,7 @@ export function validateMovieInfo(movieInfo: MovieInfo): boolean {
   }
 
   // 检查数组字段
-  if (!Array.isArray(movieInfo.genres) || !Array.isArray(movieInfo.actors)) {
+  if (!Array.isArray(movieInfo.genres) || !Array.isArray(movieInfo.directors) || !Array.isArray(movieInfo.actors)) {
     return false;
   }
 
@@ -343,6 +377,7 @@ export function cleanMovieInfo(movieInfo: MovieInfo): MovieInfo {
     year: movieInfo.year.trim(),
     rating: movieInfo.rating.trim(),
     genres: movieInfo.genres.map(genre => StringUtils.cleanWhitespace(genre)).filter(g => g.length > 0),
+    directors: movieInfo.directors.map(director => StringUtils.cleanWhitespace(director)).filter(d => d.length > 0),
     actors: movieInfo.actors.map(actor => StringUtils.cleanWhitespace(actor)).filter(a => a.length > 0),
     poster: movieInfo.poster.trim(),
     summary: StringUtils.cleanWhitespace(movieInfo.summary),
